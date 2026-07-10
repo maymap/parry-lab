@@ -4,7 +4,8 @@
 
 玩家操控第三人稱角色，用消耗魔力、有冷卻的**火球技能**攻擊會受擊、會重生的**訓練假人**，聚焦在「一個技能做到位」的動作戰鬥手感。
 
-> 這是一個原型（prototype），不是完整遊戲。設計文件見 [`docs/GDD.md`](docs/GDD.md)。
+> 這是一個原型（prototype），不是完整遊戲。
+> 設計文件見 [`docs/GDD.md`](docs/GDD.md)；編譯流程與踩坑紀錄見 [`docs/DEV_NOTES.md`](docs/DEV_NOTES.md)。
 
 ---
 
