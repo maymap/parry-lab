@@ -47,10 +47,10 @@ AParryLabCharacter::AParryLabCharacter()
 	// 降低 3D 暈眩、看清火球飛行。
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 1000.0f;                    // 拉遠，視野更廣
+	CameraBoom->TargetArmLength = 800.0f;                     // 拉近一點，動作感更強
 	CameraBoom->bUsePawnControlRotation = false;              // 不隨滑鼠旋轉
 	CameraBoom->SetUsingAbsoluteRotation(true);               // 忽略角色轉向，維持固定角度
-	CameraBoom->SetWorldRotation(FRotator(-60.0f, 0.0f, 0.0f)); // 俯角 60 度往下看
+	CameraBoom->SetWorldRotation(FRotator(-45.0f, 0.0f, 0.0f)); // 斜俯角 45 度（Hades/Diablo 那種 3/4 視角）
 	CameraBoom->bDoCollisionTest = false;                     // 不因牆壁自動拉近
 
 	// Create a follow camera
