@@ -14,10 +14,14 @@
 #include "Abilities/GameplayAbility.h"
 #include "ParryLabAttributeSet.h"
 #include "GA_Fireball.h"
+#include "Engine/Engine.h"
 #include "ParryLab.h"
 
 AParryLabCharacter::AParryLabCharacter()
 {
+	// 開啟每幀更新（用於回魔與螢幕顯示數值）
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -39,11 +43,15 @@ AParryLabCharacter::AParryLabCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
+	// 固定俯視（等角）攝影機：拉高拉遠、往下看、不隨滑鼠或角色旋轉，
+	// 降低 3D 暈眩、看清火球飛行。
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;
-	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->TargetArmLength = 1000.0f;                    // 拉遠，視野更廣
+	CameraBoom->bUsePawnControlRotation = false;              // 不隨滑鼠旋轉
+	CameraBoom->SetUsingAbsoluteRotation(true);               // 忽略角色轉向，維持固定角度
+	CameraBoom->SetWorldRotation(FRotator(-60.0f, 0.0f, 0.0f)); // 俯角 60 度往下看
+	CameraBoom->bDoCollisionTest = false;                     // 不因牆壁自動拉近
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -78,6 +86,30 @@ void AParryLabCharacter::BeginPlay()
 		if (HasAuthority() && FireballAbility)
 		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(FireballAbility, 1, INDEX_NONE, this));
+		}
+	}
+}
+
+void AParryLabCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (AbilitySystemComponent && AttributeSet)
+	{
+		// 回魔（不超過上限）
+		const float NewMana = FMath::Min(
+			AttributeSet->GetMana() + ManaRegenRate * DeltaSeconds,
+			AttributeSet->GetMaxMana());
+		AbilitySystemComponent->SetNumericAttributeBase(UParryLabAttributeSet::GetManaAttribute(), NewMana);
+
+		// 螢幕常駐顯示數值（暫時除錯用；正式 HUD 為 task 5）
+		if (GEngine)
+		{
+			const FString Msg = FString::Printf(
+				TEXT("Mana %.0f/%.0f     Health %.0f/%.0f"),
+				AttributeSet->GetMana(), AttributeSet->GetMaxMana(),
+				AttributeSet->GetHealth(), AttributeSet->GetMaxHealth());
+			GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Cyan, Msg);
 		}
 	}
 }

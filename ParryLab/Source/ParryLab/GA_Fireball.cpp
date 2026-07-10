@@ -46,12 +46,8 @@ void UGA_Fireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	// 只在具權限端生成（單機 PIE 即符合）
 	if (Avatar && ProjectileClass && ActorInfo->IsNetAuthority())
 	{
-		// 瞄準方向：pawn 用控制器視角，否則用自身朝向
-		FRotator SpawnRot = Avatar->GetActorRotation();
-		if (const APawn* Pawn = Cast<APawn>(Avatar))
-		{
-			SpawnRot = Pawn->GetControlRotation();
-		}
+		// 以角色面向方向發射（角色會自動轉向移動方向），配合固定俯視攝影機較直覺
+		const FRotator SpawnRot = Avatar->GetActorRotation();
 
 		const FVector SpawnLoc = Avatar->GetActorLocation()
 			+ SpawnRot.Vector() * SpawnForwardOffset
@@ -64,7 +60,15 @@ void UGA_Fireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if (UWorld* World = GetWorld())
 		{
-			World->SpawnActor<AFireballProjectile>(ProjectileClass, SpawnLoc, SpawnRot, Params);
+			// 一次發射多顆，左右均勻散開
+			const int32 Count = FMath::Max(1, NumProjectiles);
+			const float StartYaw = -SpreadAngleDeg * (Count - 1) * 0.5f;
+			for (int32 i = 0; i < Count; ++i)
+			{
+				FRotator ShotRot = SpawnRot;
+				ShotRot.Yaw += StartYaw + SpreadAngleDeg * i;
+				World->SpawnActor<AFireballProjectile>(ProjectileClass, SpawnLoc, ShotRot, Params);
+			}
 		}
 	}
 

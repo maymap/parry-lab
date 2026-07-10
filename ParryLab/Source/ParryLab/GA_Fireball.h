@@ -44,9 +44,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
 	float SpawnHeightOffset = 70.f;
 
-	/** 冷卻秒數 */
+	/** 一次發射的火球數量 */
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
-	float CooldownDuration = 3.0f;
+	int32 NumProjectiles = 3;
+
+	/** 相鄰火球之間的散射角度（度） */
+	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
+	float SpreadAngleDeg = 12.0f;
+
+	/** 冷卻秒數（縮短，讓連發更順） */
+	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
+	float CooldownDuration = 0.2f;
 
 	/** 冷卻標籤容器（由 GetCooldownTags 回傳，供 CheckCooldown 判斷） */
 	FGameplayTagContainer CooldownTagsContainer;

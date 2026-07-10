@@ -42,6 +42,10 @@ class AParryLabCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY()
 	UParryLabAttributeSet* AttributeSet;
 
+	/** 每秒回復的魔力 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta = (AllowPrivateAccess = "true"))
+	float ManaRegenRate = 30.f;
+
 protected:
 
 	/** Jump Input Action */
@@ -82,6 +86,9 @@ protected:
 
 	/** 初始化 GAS actor info */
 	virtual void BeginPlay() override;
+
+	/** 每幀回魔並於螢幕顯示數值 */
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
