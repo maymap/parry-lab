@@ -10,7 +10,7 @@
 ## 2. GAS 屬性基礎
 
 - [x] 2.1 [C++] 依「**AttributeSet 用最小 C++，其餘 Blueprint**」的決策，實作一個 AttributeSet 定義 `Health`/`MaxHealth`/`Mana`/`MaxMana`，含 replication 樣板。驗證：編譯通過（命令列 Build.sh 成功，libUnrealEditor-ParryLab.dylib 連結完成）。屬性可在 ASC 讀到於 2.2 掛上 ASC 後確認。
-- [ ] 2.2 [Editor] 為玩家角色與假人各掛上 AbilitySystemComponent 並初始化屬性（GameplayEffect 設定初始 Mana/Health 滿值）。驗證：PIE 用 `showdebug abilitysystem` 可見兩者屬性初始為滿。
+- [x] 2.2 [C++] 為玩家角色掛上 AbilitySystemComponent 並初始化屬性（AttributeSet 建構子設定 Health/Mana=100）。驗證：PIE 用 `showdebug abilitysystem` 可見玩家 Health/Mana=100。（假人的 ASC 於 task 4 建立假人 actor 時一併掛上。）
 
 ## 3. 火球技能（GAS）
 

@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "AbilitySystemComponent.h"
+#include "ParryLabAttributeSet.h"
 #include "ParryLab.h"
 
 AParryLabCharacter::AParryLabCharacter()
@@ -46,8 +48,32 @@ AParryLabCharacter::AParryLabCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	// GAS：建立能力系統元件與屬性集
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	// 屬性集初始值在 UParryLabAttributeSet 建構子設定（Health/Mana 皆 100）
+	AttributeSet = CreateDefaultSubobject<UParryLabAttributeSet>(TEXT("AttributeSet"));
+}
+
+void AParryLabCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// GAS：初始化 actor info（單機下 owner 與 avatar 都是自己）
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
+
+UAbilitySystemComponent* AParryLabCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AParryLabCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

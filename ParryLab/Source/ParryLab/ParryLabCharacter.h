@@ -5,12 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "AbilitySystemInterface.h"
 #include "ParryLabCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
+class UAbilitySystemComponent;
+class UParryLabAttributeSet;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -19,7 +22,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  Implements a controllable orbiting camera
  */
 UCLASS(abstract)
-class AParryLabCharacter : public ACharacter
+class AParryLabCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -30,7 +33,15 @@ class AParryLabCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
+	/** GAS：能力系統元件（管理屬性、技能、效果） */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GAS", meta = (AllowPrivateAccess = "true"))
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	/** GAS：本角色的屬性集（Mana/Health） */
+	UPROPERTY()
+	UParryLabAttributeSet* AttributeSet;
+
 protected:
 
 	/** Jump Input Action */
@@ -52,9 +63,17 @@ protected:
 public:
 
 	/** Constructor */
-	AParryLabCharacter();	
+	AParryLabCharacter();
+
+	//~ Begin IAbilitySystemInterface
+	/** GAS 介面：回傳本角色的 AbilitySystemComponent */
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//~ End IAbilitySystemInterface
 
 protected:
+
+	/** 初始化 GAS actor info */
+	virtual void BeginPlay() override;
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
