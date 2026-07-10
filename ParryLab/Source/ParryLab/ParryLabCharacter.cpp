@@ -11,7 +11,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/GameplayAbility.h"
 #include "ParryLabAttributeSet.h"
+#include "GA_Fireball.h"
 #include "ParryLab.h"
 
 AParryLabCharacter::AParryLabCharacter()
@@ -58,6 +60,9 @@ AParryLabCharacter::AParryLabCharacter()
 
 	// 屬性集初始值在 UParryLabAttributeSet 建構子設定（Health/Mana 皆 100）
 	AttributeSet = CreateDefaultSubobject<UParryLabAttributeSet>(TEXT("AttributeSet"));
+
+	// 預設火球技能（可在角色 BP 覆寫）
+	FireballAbility = UGA_Fireball::StaticClass();
 }
 
 void AParryLabCharacter::BeginPlay()
@@ -68,6 +73,12 @@ void AParryLabCharacter::BeginPlay()
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+		// 授予火球技能（在具權限端）
+		if (HasAuthority() && FireballAbility)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(FireballAbility, 1, INDEX_NONE, this));
+		}
 	}
 }
 
@@ -91,6 +102,12 @@ void AParryLabCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AParryLabCharacter::Look);
+
+		// Fire（火球）
+		if (FireAction)
+		{
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AParryLabCharacter::OnFire);
+		}
 	}
 	else
 	{
@@ -114,6 +131,15 @@ void AParryLabCharacter::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AParryLabCharacter::OnFire(const FInputActionValue& Value)
+{
+	// 觸發火球技能（GAS 會處理魔力/冷卻檢查——於後續階段加入）
+	if (AbilitySystemComponent && FireballAbility)
+	{
+		AbilitySystemComponent->TryActivateAbilityByClass(FireballAbility);
+	}
 }
 
 void AParryLabCharacter::DoMove(float Right, float Forward)

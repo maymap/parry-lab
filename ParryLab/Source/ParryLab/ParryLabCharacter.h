@@ -60,6 +60,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	/** Fire (火球) Input Action — 綁左鍵 */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* FireAction;
+
+	/** 火球技能類別（預設 UGA_Fireball，可在 BP 覆寫） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameplayAbility> FireballAbility;
+
 public:
 
 	/** Constructor */
@@ -85,6 +93,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for fire (火球) input — 觸發火球技能 */
+	void OnFire(const FInputActionValue& Value);
 
 public:
 
