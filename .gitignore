@@ -1,0 +1,22 @@
+# Spectra app data
+.spectra/
+openspec/.vector-search.db*
+
+# Unreal Engine (產生於編輯器/編譯，不進版控)
+# UE 專案預計放在 ue5/ 或以專案名為根，以下規則對任何位置生效。
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+*.VC.db
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.xcodeproj/
+*.xcworkspace/
+
+# macOS
+.DS_Store
