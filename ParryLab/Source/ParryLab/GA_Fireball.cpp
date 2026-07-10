@@ -2,6 +2,8 @@
 
 #include "GA_Fireball.h"
 #include "FireballProjectile.h"
+#include "GE_FireballCost.h"
+#include "GE_FireballCooldown.h"
 #include "GameFramework/Pawn.h"
 #include "Engine/World.h"
 
@@ -11,6 +13,18 @@ UGA_Fireball::UGA_Fireball()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	// 預設用 C++ 的火球類別，之後可在編輯器換成帶特效的 BP 子類
 	ProjectileClass = AFireballProjectile::StaticClass();
+
+	// 魔力消耗：GAS 用它自動判斷「魔力足夠才可施放」
+	CostGameplayEffectClass = UGE_FireballCost::StaticClass();
+
+	// 冷卻：施放後套用冷卻 GE，並以 Cooldown.Fireball 標籤判斷冷卻中
+	CooldownGameplayEffectClass = UGE_FireballCooldown::StaticClass();
+	CooldownTagsContainer.AddTag(TAG_Cooldown_Fireball);
+}
+
+const FGameplayTagContainer* UGA_Fireball::GetCooldownTags() const
+{
+	return &CooldownTagsContainer;
 }
 
 void UGA_Fireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

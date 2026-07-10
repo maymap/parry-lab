@@ -10,6 +10,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class UGameplayEffect;
 
 UCLASS()
 class PARRYLAB_API AFireballProjectile : public AActor
@@ -31,6 +32,10 @@ protected:
 	/** 讓火球朝前飛行 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Fireball", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
+
+	/** 命中時對目標套用的傷害 GameplayEffect（預設 GE_FireballDamage） */
+	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	/** 命中任何東西時呼叫 */
 	UFUNCTION()

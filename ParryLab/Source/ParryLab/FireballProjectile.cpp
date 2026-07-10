@@ -5,6 +5,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayEffect.h"
+#include "GE_FireballDamage.h"
 
 AFireballProjectile::AFireballProjectile()
 {
@@ -39,11 +43,31 @@ AFireballProjectile::AFireballProjectile()
 
 	// 3 秒後自動消失，避免飛太遠殘留
 	InitialLifeSpan = 3.f;
+
+	// 預設傷害效果
+	DamageEffectClass = UGE_FireballDamage::StaticClass();
 }
 
 void AFireballProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                 FVector NormalImpulse, const FHitResult& Hit)
 {
-	// 階段 3-1：命中任何東西就銷毀（傷害於 3-4 加入）
+	// 若命中的目標有 AbilitySystemComponent，套用火球傷害
+	if (OtherActor && OtherActor != this && DamageEffectClass)
+	{
+		if (UAbilitySystemComponent* TargetASC =
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			FGameplayEffectContextHandle Context = TargetASC->MakeEffectContext();
+			Context.AddInstigator(GetInstigator(), this);
+
+			FGameplayEffectSpecHandle Spec = TargetASC->MakeOutgoingSpec(DamageEffectClass, 1.f, Context);
+			if (Spec.IsValid())
+			{
+				TargetASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+			}
+		}
+	}
+
+	// 命中任何東西（含牆面）都銷毀火球
 	Destroy();
 }

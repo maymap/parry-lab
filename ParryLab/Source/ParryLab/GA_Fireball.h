@@ -23,6 +23,9 @@ public:
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
 
+	/** 回傳冷卻標籤，供 GAS 判斷是否冷卻中 */
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
+
 protected:
 	/** 要生成的火球投射物類別（預設 AFireballProjectile） */
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
@@ -35,4 +38,7 @@ protected:
 	/** 生成高度偏移（約胸口/頭部高度，讓它在鏡頭中清楚可見） */
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
 	float SpawnHeightOffset = 70.f;
+
+	/** 冷卻標籤容器（由 GetCooldownTags 回傳） */
+	FGameplayTagContainer CooldownTagsContainer;
 };
