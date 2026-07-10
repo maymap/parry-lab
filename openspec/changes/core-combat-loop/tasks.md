@@ -4,12 +4,12 @@
 
 ## 1. 專案骨架
 
-- [ ] 1.1 [Editor] **以 UE5 Third Person 範本為基礎** 建立 5.x 專案（C++ 型別），啟用 GameplayAbilities 外掛。驗證：專案能開啟並 PIE，角色可 WASD 移動（達成「第三人稱角色移動」需求的基礎）。
+- [x] 1.1 [Editor] **以 UE5 Third Person 範本為基礎** 建立 5.x 專案（C++ 型別），啟用 GameplayAbilities 外掛。驗證：專案能開啟並 PIE，角色可 WASD 移動（達成「第三人稱角色移動」需求的基礎）。
 - [ ] 1.2 [Editor] 搭建訓練室關卡（內建地板 + 牆 + 一個出生點），設定 GameMode 使玩家生成於出生點面向假人位置。驗證：PIE 時滿足「訓練場出生點」需求 — 角色出生於固定點、假人在視野前方。
 
 ## 2. GAS 屬性基礎
 
-- [ ] 2.1 [C++] 依「**AttributeSet 用最小 C++，其餘 Blueprint**」的決策，實作一個 AttributeSet 定義 `Health`/`MaxHealth`/`Mana`/`MaxMana`，含 replication 樣板。驗證：編譯通過，屬性可在角色/假人的 AbilitySystemComponent 讀到。
+- [x] 2.1 [C++] 依「**AttributeSet 用最小 C++，其餘 Blueprint**」的決策，實作一個 AttributeSet 定義 `Health`/`MaxHealth`/`Mana`/`MaxMana`，含 replication 樣板。驗證：編譯通過（命令列 Build.sh 成功，libUnrealEditor-ParryLab.dylib 連結完成）。屬性可在 ASC 讀到於 2.2 掛上 ASC 後確認。
 - [ ] 2.2 [Editor] 為玩家角色與假人各掛上 AbilitySystemComponent 並初始化屬性（GameplayEffect 設定初始 Mana/Health 滿值）。驗證：PIE 用 `showdebug abilitysystem` 可見兩者屬性初始為滿。
 
 ## 3. 火球技能（GAS）
