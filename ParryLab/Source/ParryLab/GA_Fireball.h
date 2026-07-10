@@ -6,9 +6,14 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "NativeGameplayTags.h"
+#include "Engine/EngineTypes.h"
 #include "GA_Fireball.generated.h"
 
 class AFireballProjectile;
+
+// 冷卻期間掛在施法者身上的標籤（於 GA_Fireball.cpp 定義）
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Fireball);
 
 UCLASS()
 class PARRYLAB_API UGA_Fireball : public UGameplayAbility
@@ -39,6 +44,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
 	float SpawnHeightOffset = 70.f;
 
-	/** 冷卻標籤容器（由 GetCooldownTags 回傳） */
+	/** 冷卻秒數 */
+	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
+	float CooldownDuration = 3.0f;
+
+	/** 冷卻標籤容器（由 GetCooldownTags 回傳，供 CheckCooldown 判斷） */
 	FGameplayTagContainer CooldownTagsContainer;
+
+	/** 冷卻計時器 */
+	FTimerHandle CooldownTimerHandle;
 };
